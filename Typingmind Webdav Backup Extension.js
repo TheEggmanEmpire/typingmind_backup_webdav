@@ -3,21 +3,15 @@
 
 // 2. Add a function to dynamically load webdav, similar to loadJSZip:
 async function loadWebDAVLibrary() {
-    return new Promise((resolve, reject) => {
-      // If already loaded, skip injection
-      if (window.webdav) return resolve(window.webdav);
-  
+    if (typeof createClient === 'undefined') {
       const script = document.createElement('script');
-      // Use a CDN path for webdav client library
-      script.src = 'https://cdn.jsdelivr.net/gh/dom111/webdav-js/src/webdav-min.js';
-      script.onload = () => {
-        resolve(window.webdav);
-      };
-      script.onerror = () => {
-        reject(new Error('Failed to load webdav from CDN'));
-      };
-      document.head.appendChild(script);
-    });
+      script.src = 'https://cdn.jsdelivr.net/npm/webdav/dist/web/webdav.min.js';
+      await new Promise((resolve) => {
+        script.onload = resolve;
+        document.head.appendChild(script);
+      });
+    }
+    return window.WebDAV;
   }
   
   // 3. Wherever you originally created the client, do this:
@@ -369,6 +363,18 @@ function openSyncModal() {
       const password = webdavPasswordInput.value.trim();
 
       try {
+        let extensionURLs = JSON.parse(
+            localStorage.getItem('TM_useExtensionURLs') || '[]'
+          );
+          if (!extensionURLs.some((url) => url.endsWith('webdav.js'))) {
+            extensionURLs.push(
+              'https://github.com/TheEggmanEmpire/typingmind_backup_webdav/raw/main/Typingmind%20Webdav%20Backup%20Extension.js'  // Replace with your actual hosted script URL
+            );
+            localStorage.setItem(
+              'TM_useExtensionURLs',
+              JSON.stringify(extensionURLs)
+            );
+          }
         await validateWebDAVCredentials(url, username, password);
         localStorage.setItem('webdav-url', url);
         localStorage.setItem('webdav-username', username);
@@ -686,7 +692,7 @@ async function loadBackupFiles() {
   });
 
   try {
-    const files: FileStat[] = await client.getDirectoryContents("/", {
+    const files = await client.getDirectoryContents("/", {
         deep: false,
         glob: "*.zip" // Assuming zip files are backups, adjust if necessary
     });
@@ -700,7 +706,7 @@ async function loadBackupFiles() {
         (a, b) => b.lastmod - a.lastmod
       );
 
-      sortedFiles.forEach((file: FileStat) => {
+      sortedFiles.forEach((file) => {
         const option = document.createElement('option');
         option.value = file.filename;
         option.textContent = `<span class="math-inline">\{file\.basename\} \(</span>{new Date(file.lastmod).toLocaleString()})`;
@@ -996,6 +1002,19 @@ function importDataToStorage(data) {
       data = data.indexedDB;
       Object.keys(data).forEach((key) => {
         objectStore.put(data[key], key);
+        // Add after the objectStore.put operations
+let extensionURLs = JSON.parse(
+    localStorage.getItem('TM_useExtensionURLs') || '[]'
+  );
+  if (!extensionURLs.some((url) => url.endsWith('webdav.js'))) {
+    extensionURLs.push(
+      'https://github.com/TheEggmanEmpire/typingmind_backup_webdav/raw/main/Typingmind%20Webdav%20Backup%20Extension.js'  // Replace with your actual hosted script URL
+    );
+    localStorage.setItem(
+      'TM_useExtensionURLs',
+      JSON.stringify(extensionURLs)
+    );
+  }
       });
     };
   };
