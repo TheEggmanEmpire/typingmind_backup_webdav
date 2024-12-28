@@ -1,4 +1,34 @@
-import { createClient, WebDAVClient, FileStat } from 'webdav';
+// 1. Remove or comment out the import statement:
+// import { createClient, WebDAVClient, FileStat } from 'webdav';
+
+// 2. Add a function to dynamically load webdav, similar to loadJSZip:
+async function loadWebDAVLibrary() {
+    return new Promise((resolve, reject) => {
+      // If already loaded, skip injection
+      if (window.webdav) return resolve(window.webdav);
+  
+      const script = document.createElement('script');
+      // Use a CDN path for webdav client library
+      script.src = 'https://unpkg.com/webdav/dist/webdav.min.js';
+      script.onload = () => {
+        resolve(window.webdav);
+      };
+      script.onerror = () => {
+        reject(new Error('Failed to load webdav from CDN'));
+      };
+      document.head.appendChild(script);
+    });
+  }
+  
+  // 3. Wherever you originally created the client, do this:
+  await loadWebDAVLibrary(); 
+  const client = window.webdav.createClient(webdavUrl, {
+    username: webdavUsername,
+    password: webdavPassword,
+  });
+  
+  // The rest of the code that uses 'client' remains the same.
+  
 
 let backupIntervalRunning = false;
 let wasImportSuccessful = false;
