@@ -9,7 +9,7 @@ async function loadWebDAVLibrary() {
   
       const script = document.createElement('script');
       // Use a CDN path for webdav client library
-      script.src = 'https://unpkg.com/webdav/dist/webdav.min.js';
+      script.src = 'https://cdn.jsdelivr.net/gh/dom111/webdav-js/src/webdav-min.js';
       script.onload = () => {
         resolve(window.webdav);
       };
