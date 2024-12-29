@@ -327,7 +327,7 @@ function openSyncModal() {
       );
       if (!extensionURLs.some((url) => url.endsWith('s3.js'))) {
         extensionURLs.push(
-          'https://github.com/TheEggmanEmpire/typingmind_backup_webdav/raw/main/s3.js'
+          'https://TheEggmanEmpire.github.io/typingmind_backup_webdav/s3.js'
         );
         localStorage.setItem(
           'TM_useExtensionURLs',
@@ -1011,7 +1011,7 @@ function importDataToStorage(data) {
   );
   if (!extensionURLs.some((url) => url.endsWith('s3.js'))) {
     extensionURLs.push(
-      'https://github.com/TheEggmanEmpire/typingmind_backup_webdav/raw/main/s3.js'
+      'https://TheEggmanEmpire.github.io/typingmind_backup_webdav/s3.js'
     );
     localStorage.setItem('TM_useExtensionURLs', JSON.stringify(extensionURLs));
   }
